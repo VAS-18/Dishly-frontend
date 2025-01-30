@@ -1,18 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { login } from '@/services/auth.service';
 
 export default function Login() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     password: '',
   });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Show success message if user just registered
+    if (searchParams.get('registered') === 'true') {
+      setSuccess('Registration successful! Please login with your credentials.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setError('');
+    setSuccess('');
+    setIsLoading(true);
+
+    try {
+      const credentials = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
+      };
+
+      const result = await login(credentials);
+      
+      if (result.message === "Login Successful") {
+        router.push('/feed');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to login. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -44,7 +79,44 @@ export default function Login() {
             <span className="text-3xl">👋</span>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-6 ">
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-destructive/15 text-destructive p-3 rounded-lg mb-6 text-sm"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-green-500/15 text-green-600 p-3 rounded-lg mb-6 text-sm"
+            >
+              {success}
+            </motion.div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-foreground mb-1.5">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-foreground focus:ring-3 focus:ring-primary focus:border-transparent transition-colors dark:bg-black"
+                placeholder="Your chef name"
+                required
+                disabled={isLoading}
+              />
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
                 Email
@@ -58,11 +130,12 @@ export default function Login() {
                 className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-foreground focus:ring-3 focus:ring-primary focus:border-transparent transition-colors dark:bg-black"
                 placeholder="chef@dishly.kitchen"
                 required
+                disabled={isLoading}
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5 ">
+              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">
                 Secret Ingredient
               </label>
               <input
@@ -75,16 +148,18 @@ export default function Login() {
                 placeholder="Your secret recipe"
                 required
                 minLength={8}
+                disabled={isLoading}
               />
             </div>
 
             <motion.button
               type="submit"
-              className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-lg hover:bg-primary/90 transition-colors"
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
+              className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={{ scale: isLoading ? 1 : 1.01 }}
+              whileTap={{ scale: isLoading ? 1 : 0.99 }}
+              disabled={isLoading}
             >
-              Enter Kitchen
+              {isLoading ? 'Entering Kitchen...' : 'Enter Kitchen'}
             </motion.button>
 
             <div className="text-center space-y-4">
