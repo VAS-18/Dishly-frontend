@@ -119,10 +119,25 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-black">
+    <div className="min-h-screen flex dark:bg-black">
+      <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1 }}
+      className='h-screen w-1/2 relative hidden lg:block overflow-hidden '
+      >
+      <video
+          src="/SignUp.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className='absolute inset-0 w-full h-full object-cover p-3 border border-black border-opacity-10 dark:border-opacity-20 dark:border-white rounded-2xl opacity-90 dark:opacity-70' 
+          />
+      </motion.div>
       <div className="container mx-auto px-4 py-8">
         <motion.div 
-          className="max-w-md mx-auto bg-card p-8 rounded-lg shadow-lg border border-white border-opacity-10 dark:bg-black"
+          className="max-w-xl mx-auto bg-card p-8 rounded-lg shadow-lg border border-white border-opacity-10 dark:bg-black"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}

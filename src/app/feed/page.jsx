@@ -1,49 +1,115 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { getFeed } from '@/services/recipe.service';
+import { useState, useEffect } from 'react';
+import { getAllRecipes } from '@/services/recipe.service';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Heart, MessageCircle, Share2 } from 'lucide-react';
 
 export default function FeedPage() {
-    const [recipes, setRecipes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const loadFeed = async () => {
-            try {
-                const { recipes } = await getFeed();
-                setRecipes(recipes);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadFeed();
-    }, []);
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const data = await getAllRecipes();
+        setRecipes(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchRecipes();
+  }, []);
+
+  if (loading) {
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Recipe Feed</h1>
-            
-            {loading && <p className="text-center">Loading recipes...</p>}
-            
-            {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                </div>
-            )}
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {recipes.map(recipe => (
-                    <div key={recipe._id} className="border rounded-lg p-4 shadow-sm">
-                        <h2 className="text-xl font-semibold mb-2">{recipe.title}</h2>
-                        <p className="text-gray-600 mb-3">{recipe.description}</p>
-                        <div className="text-sm text-gray-500">
-                            By {recipe.user?.username || 'Unknown'}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto py-8 px-4">
+      <div className="space-y-8">
+        {recipes.map((recipe) => (
+          <div key={recipe._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            {/* Recipe Header */}
+            <div className="p-4 flex items-center space-x-3">
+              <div className="h-8 w-8 rounded-full bg-gray-200 overflow-hidden">
+                {recipe.author?.profileImage && (
+                  <Image
+                    src={recipe.author.profileImage}
+                    alt={recipe.author.name}
+                    width={32}
+                    height={32}
+                    className="mx-auto"
+                  />
+                )}
+              </div>
+              <Link href={`/profile/${recipe.author?._id}`} className="font-medium hover:underline">
+                {recipe.author?.name || 'Anonymous'}
+              </Link>
+            </div>
+
+            {/* Recipe Image */}
+            <div className="relative aspect-square">
+              {recipe.images?.[0] ? (
+                <Image
+                  src={recipe.images[0]}
+                  alt={recipe.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400">No image available</span>
+                </div>
+              )}
+            </div>
+
+            {/* Recipe Actions */}
+            <div className="p-4">
+              <div className="flex space-x-4 mb-4">
+                <button className="hover:text-red-500">
+                  <Heart className="h-6 w-6" />
+                </button>
+                <button className="hover:text-blue-500">
+                  <MessageCircle className="h-6 w-6" />
+                </button>
+                <button className="hover:text-green-500">
+                  <Share2 className="h-6 w-6" />
+                </button>
+              </div>
+
+              {/* Recipe Content */}
+              <Link href={`/recipe/${recipe._id}`}>
+                <h2 className="font-bold text-xl mb-2 hover:text-blue-600">{recipe.title}</h2>
+              </Link>
+              <p className="text-gray-600 mb-2 line-clamp-2">{recipe.description}</p>
+              
+              {/* Recipe Details */}
+              <div className="text-sm text-gray-500">
+                <span>{recipe.cookingTime} mins • </span>
+                <span>{recipe.difficulty} • </span>
+                <span>{recipe.servings} servings</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

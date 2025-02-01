@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { login } from '@/services/auth.service';
+import Loading from '@/components/ui/Loading';
 
 export default function Login() {
   const router = useRouter();
@@ -50,6 +51,12 @@ export default function Login() {
     }
   };
 
+  if(isLoading){
+    return(
+      <Loading />
+    )
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -58,7 +65,10 @@ export default function Login() {
     }));
   };
 
+
+
   return (
+    <Suspense fallback={<Loading />}>
     <div className="min-h-screen flex items-center justify-center bg-background dark:bg-black">
       <div className="container mx-auto px-4 py-8">
         <motion.div 
@@ -181,5 +191,6 @@ export default function Login() {
         </motion.div>
       </div>
     </div>
+    </Suspense>
   );
 } 
