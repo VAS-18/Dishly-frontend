@@ -124,7 +124,7 @@ export default function SignUp() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
-      className='h-screen w-1/2 relative hidden lg:block overflow-hidden '
+      className='h-screen w-1/2 relative hidden lg:block overflow-hidden'
       >
       <video
           src="/SignUp.mp4"
@@ -132,10 +132,10 @@ export default function SignUp() {
           loop
           muted
           playsInline
-          className='absolute inset-0 w-full h-full object-cover p-3 border border-black border-opacity-10 dark:border-opacity-20 dark:border-white rounded-2xl opacity-90 dark:opacity-70' 
+          className='absolute inset-0 w-full h-full object-cover p-4 border border-black border-opacity-10 dark:border-opacity-20 dark:border-white rounded-2xl opacity-90 dark:opacity-70' 
           />
       </motion.div>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 lg:my-auto">
         <motion.div 
           className="max-w-xl mx-auto bg-card p-8 rounded-lg shadow-lg border border-white border-opacity-10 dark:bg-black"
           initial={{ opacity: 0, y: 20 }}

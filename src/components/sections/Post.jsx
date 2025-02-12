@@ -7,7 +7,7 @@ import Image from 'next/image';
 import React from 'react'
 import { getAllRecipes } from '@/services/recipe.service';
 
-const feedPage = () => {
+const Post = () => {
 
 const [recipes, setRecipes] = useState([]);
 const [loading, setLoading] = useState(true);
@@ -40,4 +40,4 @@ useEffect(() => {
   )
 }
 
-export default feedPage
+export default Post
