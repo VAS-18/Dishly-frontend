@@ -11,7 +11,6 @@ export default function Login() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     password: '',
   });
@@ -34,7 +33,6 @@ export default function Login() {
 
     try {
       const credentials = {
-        username: formData.username,
         email: formData.email,
         password: formData.password
       };
@@ -64,8 +62,6 @@ export default function Login() {
       [name]: value
     }));
   };
-
-
 
   return (
     <Suspense fallback={<Loading />}>
@@ -110,23 +106,6 @@ export default function Login() {
           )}
           
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-foreground mb-1.5">
-                Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-input bg-background text-foreground focus:ring-3 focus:ring-primary focus:border-transparent transition-colors dark:bg-black"
-                placeholder="Your chef name"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
                 Email
